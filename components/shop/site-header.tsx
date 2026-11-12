@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import { Heart, Menu, Search, ShoppingBag, User, X } from 'lucide-react'
 import { useCart } from '@/lib/cart-context'
 import { navLinks } from '@/lib/shop-data'
@@ -9,6 +10,16 @@ import { navLinks } from '@/lib/shop-data'
 export function SiteHeader() {
   const [open, setOpen] = useState(false)
   const { count } = useCart()
+  const pathname = usePathname()
+
+  // Next.js ignores a Link to the current URL, so on the home page we scroll up ourselves.
+  const handleLogoClick = (event: React.MouseEvent<HTMLAnchorElement>) => {
+    setOpen(false)
+    if (pathname !== '/') return
+    event.preventDefault()
+    window.history.replaceState(null, '', '/')
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
 
   return (
     <header className="sticky top-0 z-50 bg-background/90 backdrop-blur-md">
@@ -46,7 +57,12 @@ export function SiteHeader() {
             </ul>
           </nav>
 
-          <Link href="/" className="flex flex-col items-center leading-none">
+          <Link
+            href="/"
+            onClick={handleLogoClick}
+            aria-label="홈으로 이동"
+            className="flex flex-col items-center leading-none"
+          >
             <span className="font-serif text-2xl tracking-[0.3em] md:text-3xl">
               ODETTE
             </span>
